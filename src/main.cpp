@@ -4,56 +4,81 @@
 
 using namespace geode::prelude;
 
+// Variable global interna para almacenar de forma temporal si forzamos el modo 2P
+static bool g_forceTwoPlayerOverride = false;
+static bool g_hasModifiedThisSession = false;
+
 // 1. MANEJO DE LA INTERFAZ (MENÚ DE PAUSA)
 class $modify(MyPauseLayer, PauseLayer) {
     void onToggleTwoPlayer(CCObject* sender) {
         if (auto pl = PlayLayer::get()) {
-            // Modifica directamente el estado del nivel en tiempo real
-            pl->m_level->m_twoPlayerMode = !pl->m_level->m_twoPlayerMode;
+            // Marcamos que el usuario alteró el ajuste manualmente
+            g_hasModifiedThisSession = true;
+            g_forceTwoPlayerOverride = !g_forceTwoPlayerOverride;
             
-            // Muestra una notificación emergente con el estado actual
-            auto msg = pl->m_level->m_twoPlayerMode ? "Modo 2P Activo" : "Modo 1P Activo";
+            // Forzamos también el dato en el objeto del nivel
+            if (pl->m_level) {
+                pl->m_level->m_twoPlayerMode = g_forceTwoPlayerOverride;
+            }
+
+            // REFRESCAR EN TIEMPO REAL: Re-ejecutamos la configuración de controles del juego
+            pl->setupTwoPlayerMode();
+
+            // Mensaje emergente con el estado actual
+            auto msg = g_forceTwoPlayerOverride ? "Modo 2P Activo" : "Modo 1P Activo";
             Notification::create(msg, NotificationIcon::Info)->show();
         }
     }
 
-    // Corregido: Ahora recibe el argumento unfocused exigido por las nuevas versiones de Geode
     bool init(bool unfocused) {
-        // Le pasamos el argumento al init original del juego
         if (!PauseLayer::init(unfocused)) return false;
 
-        // Buscamos el menú lateral derecho nativo del juego
         if (auto menu = this->getChildByID("right-button-menu")) {
             auto pl = PlayLayer::get();
-            // Detecta si el nivel ya es de 2 jugadores en este momento
-            bool is2P = pl ? pl->m_level->m_twoPlayerMode : false;
+            
+            // Si el jugador no ha tocado el botón, leemos el estado base del nivel.
+            // Si ya lo tocó, respetamos el estado actual de la sesión.
+            if (!g_hasModifiedThisSession && pl && pl->m_level) {
+                g_forceTwoPlayerOverride = pl->m_level->m_twoPlayerMode;
+            }
 
-            // Creamos el botón "Check" con texturas originales de Geometry Dash
             auto toggleBtn = CCMenuItemToggler::create(
                 CCSprite::createWithSpriteFrameName("GJ_checkOff_001.png"),
                 CCSprite::createWithSpriteFrameName("GJ_checkOn_001.png"),
                 this, menu_selector(MyPauseLayer::onToggleTwoPlayer)
             );
 
-            toggleBtn->toggle(is2P); // Sincroniza el aspecto visual del check
-            toggleBtn->setID("two-player-toggle"_spr); // ID único para evitar conflictos con otros mods
+            toggleBtn->toggle(g_forceTwoPlayerOverride); 
+            toggleBtn->setID("two-player-toggle"_spr);
             
             menu->addChild(toggleBtn);
-            menu->updateLayout(); // Reordena el menú automáticamente
+            menu->updateLayout(); 
         }
         return true;
     }
 };
 
-// 2. MANEJO DE LA LÓGICA (REINICIO AL SALIR)
+// 2. MANEJO DE LA LÓGICA INTERNA Y AUTO-LIMPIEZA
 class $modify(MyPlayLayer, PlayLayer) {
+    
+    // Forzamos el estado real al iniciar el nivel por si se configuró antes
+    bool init(GJGameLevel* level, bool useReplay) {
+        if (g_hasModifiedThisSession && level) {
+            level->m_twoPlayerMode = g_forceTwoPlayerOverride;
+        }
+        return PlayLayer::init(level, useReplay);
+    }
+
+    // Se ejecuta estrictamente cuando el jugador abandona el nivel al menú
     void onQuit() {
-        // Al abandonar la partida, aseguramos que el nivel regrese a su estado original (1 Jugador)
+        // Apagamos los modificadores manuales y limpiamos la memoria
+        g_forceTwoPlayerOverride = false;
+        g_hasModifiedThisSession = false;
+        
         if (m_level) {
             m_level->m_twoPlayerMode = false;
         }
         
-        // Ejecuta la salida normal del juego
         PlayLayer::onQuit();
     }
 };
