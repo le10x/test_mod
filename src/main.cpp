@@ -17,8 +17,10 @@ class $modify(MyPauseLayer, PauseLayer) {
         }
     }
 
-    bool init() {
-        if (!PauseLayer::init()) return false;
+    // Corregido: Ahora recibe el argumento unfocused exigido por las nuevas versiones de Geode
+    bool init(bool unfocused) {
+        // Le pasamos el argumento al init original del juego
+        if (!PauseLayer::init(unfocused)) return false;
 
         // Buscamos el menú lateral derecho nativo del juego
         if (auto menu = this->getChildByID("right-button-menu")) {
