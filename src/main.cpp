@@ -1,7 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
-#include <Geode/modify/GJBaseGameLayer.hpp>
-#include <Geode/modify/PlayLayer.hpp> // Añadimos el header de PlayLayer
+#include <Geode/modify/PlayLayer.hpp> // Usamos únicamente PlayLayer para el juego
 #include <cstdlib> 
 #include <ctime>   
 
@@ -19,7 +18,7 @@ class $modify(MyPauseLayer, PauseLayer) {
         auto rightMenu = this->getChildByID("right-button-menu");
         if (!rightMenu) return;
 
-        // Creamos el botón misterioso
+        // Creamos el botón misterioso con el signo "¿?"
         auto botonMisterio = CCMenuItemSpriteExtra::create(
             ButtonSprite::create("¿?", "goldFont.fnt", "GJ_button_02.png", 0.7f),
             this,
@@ -37,7 +36,7 @@ class $modify(MyPauseLayer, PauseLayer) {
         g_noclipSecreto = (std::rand() % 2 == 1);
         g_suerteDecidida = true;
 
-        // Mensaje misterioso: No le decimos el resultado al jugador
+        // Mensaje misterioso al jugador
         FLAlertLayer::create(
             "Destino Sellado",
             "El azar ha decidido tu suerte en secreto. <y>Regresa al juego y averígualo...</y>",
@@ -46,40 +45,40 @@ class $modify(MyPauseLayer, PauseLayer) {
     }
 };
 
-// 2. LÓGICA DE DETECCIÓN EN EL JUEGO (Se queda en GJBaseGameLayer)
-class $modify(MySecretLogic, GJBaseGameLayer) {
+// 2. LÓGICA DE DETECCIÓN Y REINICIO (Todo consolidado en PlayLayer)
+class $modify(MyPlayLayer, PlayLayer) {
+    
+    // Interceptamos la muerte del jugador de forma segura desde PlayLayer
     void destroyPlayer(PlayerObject* player, GameObject* object) {
         
-        // Si el jugador presionó el botón de la suerte...
+        // Si el jugador decidió tentar a la suerte en el menú de pausa...
         if (g_suerteDecidida) {
             
             if (g_noclipSecreto) {
-                // ¡Tuvo suerte! Mostramos una notificación rápida en la pantalla
+                // ¡Ganó el 50%! Mostramos la notificación flotante de éxito
                 Notification::create("¡BENDITO POR EL AZAR! (Noclip Activo)", NotificationIcon::Success, 1.5f)->show();
                 
                 g_suerteDecidida = false; 
-                return; // Sobrevive
+                return; // Evitamos la muerte (Noclip activo)
             } else {
-                // Mala suerte. Mostramos la notificación de fracaso justo antes de morir
+                // Perdió el 50%. Mostramos notificación de fracaso justo antes de explotar
                 Notification::create("¡EL DESTINO TE ABANDONÓ!", NotificationIcon::Error, 2.0f)->show();
                 
                 g_suerteDecidida = false;
-                GJBaseGameLayer::destroyPlayer(player, object); // Muere
+                PlayLayer::destroyPlayer(player, object); // Ejecuta la muerte normal
             }
             
         } else {
-            // Si nunca presionó el botón de pausa, el juego actúa normal
-            GJBaseGameLayer::destroyPlayer(player, object);
+            // Comportamiento normal si no usó el botón de la suerte
+            PlayLayer::destroyPlayer(player, object);
         }
     }
-};
 
-// 3. REINICIO DE VARIABLES AL MORIR (Se mueve a PlayLayer para evitar el error inline)
-class $modify(MyPlayLayer, PlayLayer) {
+    // Interceptamos el reinicio del nivel de forma segura desde PlayLayer
     void resetLevel() {
-        PlayLayer::resetLevel(); // Ejecuta el reinicio normal de PlayLayer
+        PlayLayer::resetLevel();
         
-        // Al reiniciar el nivel, limpiamos los estados para la siguiente prueba
+        // Limpiamos los estados para la próxima ronda o intento
         g_suerteDecidida = false;
         g_noclipSecreto = false;
     }
