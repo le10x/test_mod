@@ -17,7 +17,7 @@ class $modify(MyPauseLayer, PauseLayer) {
         std::string side = Mod::get()->getSettingValue<std::string>("button-side");
         
         // 2. Determinar el ID del menú según la preferencia
-        std::string menuID = (side == "Izquierda") ? "left-button-menu" : "right-button-menu";
+        std::string menuID = (side == "Left") ? "left-button-menu" : "right-button-menu";
         auto menu = this->getChildByID(menuID);
         
         if (!menu) return;
