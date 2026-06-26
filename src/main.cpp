@@ -27,7 +27,8 @@ class $modify(MyPauseLayer, PauseLayer) {
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
         g_noclip = (std::rand() % 2 == 1);
         g_yesclip = true;
-        FLAlertLayer::create("Random Noclip", "Noclip enabled? Find out by playing!"Ok") -> show();
+        // CORREGIDO: Se añadió la comilla que faltaba antes de Ok
+        FLAlertLayer::create("Random Noclip", "Noclip enabled? Find out by playing!", "Ok") -> show();
     }
 };
 
