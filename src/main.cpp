@@ -37,16 +37,19 @@ class $modify(MyLevelCell, LevelCell) {
 
     void onGhostGetIt(CCObject* sender) {
         g_isGhostModeActive = true;
-        GameLevelManager::sharedState()->downloadLevel(this->m_level->m_levelID.value(), false);
+        // Agregamos un 0 al final como tercer argumento (dailyID)
+        GameLevelManager::sharedState()->downloadLevel(this->m_level->m_levelID.value(), false, 0);
     }
 };
 
 class $modify(GhostModeNetwork, GameLevelManager) {
-    void downloadLevel(int levelID, bool isGauntlet) {
+    // Añadimos 'int dailyID' a la firma del Hook
+    void downloadLevel(int levelID, bool isGauntlet, int dailyID) {
         if (g_isGhostModeActive) {
             g_isGhostModeActive = false;
             return; 
         }
-        GameLevelManager::downloadLevel(levelID, isGauntlet);
+        // Pasamos los 3 argumentos a la función original
+        GameLevelManager::downloadLevel(levelID, isGauntlet, dailyID);
     }
 };
