@@ -1,29 +1,52 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/LevelCell.hpp>
+#include <Geode/modify/GameLevelManager.hpp>
 
 using namespace geode::prelude;
 
-class $modify(PlayLayer) {
-    void update(float dt) {
-        PlayLayer::update(dt);
+bool g_isGhostModeActive = false;
 
-        if (!m_player1 || !m_player2) return;
+class $modify(MyLevelCell, LevelCell) {
+    void loadCustomLevelCell() {
+        LevelCell::loadCustomLevelCell();
 
-        // Accedemos al gestor de efectos del juego
-        auto gameMgr = GameManager::sharedState();
-        if (!gameMgr) return;
+        auto mainMenu = this->m_mainLayer->getChildByID("main-menu");
+        if (!mainMenu) mainMenu = typeinfo_cast<CCMenu*>(this->m_mainLayer->getChildByTag(1));
+        auto getItBtn = this->m_mainLayer->getChildByID("get-it-button");
 
-        // ID 1000 = Color del Background (BG)
-        // ID 1001 = Color del Ground 1 (G1)
-        cocos2d::ccColor3B bg_color = gameMgr->colorForEffectID(1000);
-        cocos2d::ccColor3B g_color = gameMgr->colorForEffectID(1001);
+        if (mainMenu) {
+            auto buttonSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+            if (buttonSprite) {
+                buttonSprite->setScale(0.4f); 
 
-        // Aplicar BG al Color 1 de ambos cubos
-        m_player1->setColor(bg_color);
-        m_player2->setColor(bg_color);
+                auto ghostButton = CCMenuItemSpriteExtra::create(
+                    buttonSprite, this, menu_selector(MyLevelCell::onGhostGetIt)
+                );
 
-        // Aplicar G al Color 2 de ambos cubos
-        m_player1->setSecondColor(g_color);
-        m_player2->setSecondColor(g_color);
+                if (getItBtn) {
+                    ghostButton->setPosition(getItBtn->getPositionX() - 35.0f, getItBtn->getPositionY());
+                } else {
+                    ghostButton->setPosition(340.0f, 25.0f);
+                }
+
+                ghostButton->setID("ghost-get-button"_spr);
+                mainMenu->addChild(ghostButton);
+            }
+        }
+    }
+
+    void onGhostGetIt(CCObject* sender) {
+        g_isGhostModeActive = true;
+        GameLevelManager::sharedState()->downloadLevel(this->m_level->m_levelID.value(), false);
+    }
+};
+
+class $modify(GhostModeNetwork, GameLevelManager) {
+    void downloadLevel(int levelID, bool isGauntlet) {
+        if (g_isGhostModeActive) {
+            g_isGhostModeActive = false;
+            return; 
+        }
+        GameLevelManager::downloadLevel(levelID, isGauntlet);
     }
 };
