@@ -5,25 +5,37 @@ using namespace geode::prelude;
 
 class $modify(MyLevelInfoLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
-        // 1. Primero obligamos al nivel a "olvidar" que ya le diste Like antes de cargar la interfaz
-        if (level) {
-            level->m_likeStatus = 0; // Ponemos el estado de voto local en 0 (sin votar)
-        }
-
-        // 2. Cargamos la pantalla normalmente
         if (!LevelInfoLayer::init(level, p1)) return false;
 
-        // 3. Buscamos el botón original de Like para asegurarnos de que permanezca activo
-        if (auto menu = this->getChildByID("like-menu")) {
-            if (auto likeBtn = menu->getChildByID("like-button")) {
-                // Forzamos al botón original a estar siempre disponible/activado
-                if (auto btnItem = typeinfo_cast<CCMenuItemSpriteExtra*>(likeBtn)) {
-                    btnItem->setEnabled(true);
-                    btnItem->setColor({255, 255, 255}); // Le quitamos el color grisáceo si se lo puso
-                }
-            }
+        if (auto menu = this->getChildByID("left-side-menu")) {
+            
+            // Usamos la textura de la mano sola ("GJ_thumbsUpIcon_001.png") 
+            // sobre el fondo verde para evitar que se duplique el círculo.
+            auto myButton = CCMenuItemSpriteExtra::create(
+                CircleButtonSprite::createWithSpriteFrameName("GJ_thumbsUpIcon_001.png", 1.0f, CircleBaseColor::Green),
+                this,
+                menu_selector(MyLevelInfoLayer::onAlternativeLike)
+            );
+
+            myButton->setID("alt-like-button");
+
+            menu->addChild(myButton);
+            menu->updateLayout();
         }
 
         return true;
+    }
+
+    void onAlternativeLike(CCObject* sender) {
+        if (m_level && GameLevelManager::sharedState()) {
+            GameLevelManager::sharedState()->likeItem(
+                static_cast<LikeItemType>(1), 
+                m_level->m_levelID, 
+                true, 
+                0
+            );
+
+            FLAlertLayer::create("Geode", "¡Like enviado!", "OK")->show();
+        }
     }
 };
