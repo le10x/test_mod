@@ -7,6 +7,10 @@ class $modify(DislikeLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelInfoLayer::init(level, p1)) return false;
 
+        // Comprobar si el usuario activó este botón en la configuración
+        bool habilitado = Mod::get()->getSettingValue<bool>("mostrar-dislike");
+        if (!habilitado) return true;
+
         if (auto menu = this->getChildByID("left-side-menu")) {
             auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_dislikeBtn_001.png");
             
