@@ -1,46 +1,35 @@
 #include <Geode/Geode.hpp>
-#include <Geode/modify/LevelCell.hpp>
-#include <string>
-#include <sstream>
-#include <iomanip>
+#include <Geode/modify/LevelInfoLayer.hpp>
 
 using namespace geode::prelude;
 
-std::string formatDownloads(int count) {
-    std::stringstream ss;
-    ss << std::fixed << std::setprecision(1) << (count / 1000.0) << "k";
-    return ss.str();
-}
+class $modify(MyLevelInfoLayer, LevelInfoLayer) {
+    bool init(GJGameLevel* level, bool p1) {
+        if (!LevelInfoLayer::init(level, p1)) return false;
 
-class $modify(MyLevelCell, LevelCell) {
-    void loadCustomLevelCell() {
-        LevelCell::loadCustomLevelCell();
-        
-        if (!m_level) return;
-
-        // Recorremos todos los elementos (hijos) de la celda de forma segura
-        auto children = this->getChildren();
-        if (!children) return;
-
-        int downloads = m_level->m_downloads;
-        std::string formattedText = formatDownloads(downloads);
-
-        for (int i = 0; i < children->count(); ++i) {
-            auto child = typeinfo_cast<CCLabelBMFont*>(children->objectAtIndex(i));
+        // Buscar el menú lateral izquierdo de la pantalla
+        if (auto menu = this->getChildByID("left-side-menu")) {
             
-            if (child) {
-                // Obtenemos el texto actual que tiene la etiqueta
-                std::string currentStr = child->getString();
-                
-                // Convertimos el número de descargas original a texto para buscar la coincidencia exacta
-                std::string originalDownloadsStr = std::to_string(downloads);
-                
-                // Si la etiqueta tiene exactamente el número original de descargas, la modificamos
-                if (currentStr == originalDownloadsStr) {
-                    child->setString(formattedText.c_str());
-                    break; // Ya lo encontramos y modificamos, salimos del ciclo
-                }
-            }
+            // Crear un botón circular verde con el icono de LIKE nativo de GD
+            auto myButton = CCMenuItemSpriteExtra::create(
+                CircleButtonSprite::createWithSpriteFrameName("GJ_likeBtn_001.png", 1.0f, CircleBaseColor::Green),
+                this,
+                menu_selector(MyLevelInfoLayer::onAlternativeLike)
+            );
+
+            // Añadir el botón al menú y actualizar la posición automáticamente
+            menu->addChild(myButton);
+            menu->updateLayout();
+        }
+
+        return true;
+    }
+
+    void onAlternativeLike(CCObject* sender) {
+        // Enviar el LIKE real directamente saltándose el bloqueo del juego
+        if (m_level && GameLevelManager::sharedState()) {
+            GameLevelManager::sharedState()->likeItem(GJLevelType::Saved, m_level->m_levelID, true);
+            FLAlertLayer::create("Geode", "¡Like enviado!", "OK")->show();
         }
     }
 };
