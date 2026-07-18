@@ -6,27 +6,41 @@
 
 using namespace geode::prelude;
 
-// Tu función utilitaria de formateo
 std::string formatDownloads(int count) {
     std::stringstream ss;
     ss << std::fixed << std::setprecision(1) << (count / 1000.0) << "k";
     return ss.str();
 }
 
-// El Hook compatible con Geode 5.8.2 / GD 2.2081
 class $modify(MyLevelCell, LevelCell) {
     void loadCustomLevelCell() {
         LevelCell::loadCustomLevelCell();
         
-        // Comprobación de seguridad para evitar crashes en celdas vacías
         if (!m_level) return;
+
+        // Recorremos todos los elementos (hijos) de la celda de forma segura
+        auto children = this->getChildren();
+        if (!children) return;
 
         int downloads = m_level->m_downloads;
         std::string formattedText = formatDownloads(downloads);
-        
-        // Buscar el nodo usando la nomenclatura oficial de Geode v5
-        if (auto downloadLabel = typeinfo_cast<CCLabelBMFont*>(this->getChildByID("downloads-label"))) {
-            downloadLabel->setString(formattedText.c_str());
+
+        for (int i = 0; i < children->count(); ++i) {
+            auto child = typeinfo_cast<CCLabelBMFont*>(children->objectAtIndex(i));
+            
+            if (child) {
+                // Obtenemos el texto actual que tiene la etiqueta
+                std::string currentStr = child->getString();
+                
+                // Convertimos el número de descargas original a texto para buscar la coincidencia exacta
+                std::string originalDownloadsStr = std::to_string(downloads);
+                
+                // Si la etiqueta tiene exactamente el número original de descargas, la modificamos
+                if (currentStr == originalDownloadsStr) {
+                    child->setString(formattedText.c_str());
+                    break; // Ya lo encontramos y modificamos, salimos del ciclo
+                }
+            }
         }
     }
 };
