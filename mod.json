@@ -1,24 +1,42 @@
 {
-        "geode": "5.8.2",
-        "gd": {
-                "win": "2.2081",
-                "android": "2.2081",
-                "mac": "2.2081",
-                "ios": "2.2081"
-        },
-	"id": "le10x.alternative_likes",
-	"version": "1.0.0",
-	"name": "Alternative Likes",
-	"developer": "le10x",
-	"description": "Alternative buttons",
-	"settings": {
-		"cantidad-estrellas": {
+    "geode": "5.8.2",
+    "gd": {
+        "win": "2.2081",
+        "android": "2.2081",
+        "mac": "2.2081",
+        "ios": "2.2081"
+    },
+    "id": "le10x.alternative_likes",
+    "version": "1.0.0",
+    "name": "Alternative Likes",
+    "developer": "le10x",
+    "description": "Alternative buttons",
+    "settings": {
+        "cantidad-estrellas": {
             "name": "Cantidad de Estrellas",
             "description": "Elige cuántas estrellas enviará tu botón alternativo (1-10)",
             "type": "int",
             "default": 10,
             "min": 1,
             "max": 10
-    	}
-	}
+        },
+        "mostrar-like": {
+            "name": "Mostrar Botón de Like",
+            "description": "Activa o desactiva el botón alternativo de Like verde",
+            "type": "bool",
+            "default": true
+        },
+        "mostrar-dislike": {
+            "name": "Mostrar Botón de Dislike",
+            "description": "Activa o desactiva el botón alternativo de Dislike rojo",
+            "type": "bool",
+            "default": true
+        },
+        "mostrar-rate": {
+            "name": "Mostrar Botón de Rate",
+            "description": "Activa o desactiva el botón alternativo de Rate de estrella",
+            "type": "bool",
+            "default": true
+        }
+    }
 }
