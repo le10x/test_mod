@@ -9,18 +9,22 @@ class $modify(MyLevelInfoLayer, LevelInfoLayer) {
 
         if (auto menu = this->getChildByID("left-side-menu")) {
             
-            // Usamos la textura de la mano sola ("GJ_thumbsUpIcon_001.png") 
-            // sobre el fondo verde para evitar que se duplique el círculo.
-            auto myButton = CCMenuItemSpriteExtra::create(
-                CircleButtonSprite::createWithSpriteFrameName("GJ_thumbsUpIcon_001.png", 1.0f, CircleBaseColor::Green),
-                this,
-                menu_selector(MyLevelInfoLayer::onAlternativeLike)
-            );
+            // Creamos el sprite directamente usando la textura nativa del juego
+            auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png");
+            
+            if (btnSprite) {
+                // Creamos el botón interactivo usando el sprite limpio, sin contenedores extra
+                auto myButton = CCMenuItemSpriteExtra::create(
+                    btnSprite,
+                    this,
+                    menu_selector(MyLevelInfoLayer::onAlternativeLike)
+                );
 
-            myButton->setID("alt-like-button");
+                myButton->setID("alt-like-button");
 
-            menu->addChild(myButton);
-            menu->updateLayout();
+                menu->addChild(myButton);
+                menu->updateLayout();
+            }
         }
 
         return true;
