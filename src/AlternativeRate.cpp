@@ -12,7 +12,14 @@ class $modify(RateLayer, LevelInfoLayer) {
         if (!habilitado) return true;
 
         if (auto menu = this->getChildByID("left-side-menu")) {
-            auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_starsIcon_001.png");
+            
+            // Creamos la base circular de Geode usando el fondo azul (o puedes cambiar a Green si prefieres)
+            // e insertamos la textura de la estrella dorada encima de forma correcta.
+            auto btnSprite = CircleButtonSprite::createWithSpriteFrameName(
+                "GJ_starsIcon_001.png", 
+                1.0f, 
+                CircleBaseColor::Blue
+            );
             
             if (btnSprite) {
                 auto myButton = CCMenuItemSpriteExtra::create(
