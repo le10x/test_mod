@@ -7,6 +7,10 @@ class $modify(LikeLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelInfoLayer::init(level, p1)) return false;
 
+        // Comprobar si el usuario activó este botón en la configuración
+        bool habilitado = Mod::get()->getSettingValue<bool>("mostrar-like");
+        if (!habilitado) return true;
+
         if (auto menu = this->getChildByID("left-side-menu")) {
             auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png");
             
