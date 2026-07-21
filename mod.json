@@ -33,12 +33,12 @@
             "default": true
         },
         "leaderboard-position": {
-            "name": "Posicion del Boton",
+            "name": "Button Position",
             "description": "Elige en que menu lateral se colocara el boton de leaderboards.",
             "type": "string",
             "one-of": [
-                "Left",
-                "Right"
+                "Right",
+                "Left"
             ],
             "default": "Right"
         },
