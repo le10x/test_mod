@@ -12,8 +12,8 @@
     "developer": "le10x",
     "description": "descripcion",
     "settings": {
-        "rate-star": {
-            "name": "Rate Star",
+        "rate-stars": {
+            "name": "Rate Stars",
             "description": "Elige la cantidad fija de estrellas que enviara el acceso directo. (1-10)",
             "type": "int",
             "default": 10,
