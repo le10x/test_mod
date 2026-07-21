@@ -11,6 +11,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 project(InfinityMenu VERSION 1.0.0)
 
 add_library(${PROJECT_NAME} SHARED
+    src/BypassText.cpp
     src/ShortcutLike.cpp
     src/ShortcutDislike.cpp
     src/ShortcutRateStars.cpp
