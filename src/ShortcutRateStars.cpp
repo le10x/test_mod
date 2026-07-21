@@ -3,18 +3,15 @@
 
 using namespace geode::prelude;
 
-class $modify(RateLayer, LevelInfoLayer) {
+class $modify(RateStarsLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelInfoLayer::init(level, p1)) return false;
 
-        // Comprobar si el usuario activó el botón alternativo en la configuración
-        bool habilitado = Mod::get()->getSettingValue<bool>("mostrar-rate");
-        if (!habilitado) return true;
+        bool enabled = Mod::get()->getSettingValue<bool>("show-rate");
+        if (!enabled) return true;
 
         if (auto menu = this->getChildByID("left-side-menu")) {
             
-            // Creamos la base circular de Geode usando el fondo azul (o puedes cambiar a Green si prefieres)
-            // e insertamos la textura de la estrella dorada encima de forma correcta.
             auto btnSprite = CircleButtonSprite::createWithSpriteFrameName(
                 "GJ_starsIcon_001.png", 
                 1.0f, 
@@ -25,10 +22,10 @@ class $modify(RateLayer, LevelInfoLayer) {
                 auto myButton = CCMenuItemSpriteExtra::create(
                     btnSprite,
                     this,
-                    menu_selector(RateLayer::onAlternativeRateStars)
+                    menu_selector(RateStarsLayer::onShortcutRateStars)
                 );
 
-                myButton->setID("alt-rate-stars-button");
+                myButton->setID("shortcut-rate-stars-button");
                 menu->addChild(myButton);
                 menu->updateLayout();
             }
@@ -36,16 +33,15 @@ class $modify(RateLayer, LevelInfoLayer) {
         return true;
     }
 
-    void onAlternativeRateStars(CCObject* sender) {
+    void onShortcutRateStars(CCObject* sender) {
         if (m_level && GameLevelManager::sharedState()) {
-            // Lee el valor elegido en el menú de Geode (1-10)
-            int64_t estrellasElegidas = Mod::get()->getSettingValue<int64_t>("cantidad-estrellas");
 
-            // Envía el voto de Rate Stars al servidor del GDPS
-            GameLevelManager::sharedState()->rateStars(m_level->m_levelID, static_cast<int>(estrellasElegidas));
+            int64_t selectedStars = Mod::get()->getSettingValue<int64_t>("rate-stars");
 
-            std::string mensaje = "Voto de " + std::to_string(estrellasElegidas) + " estrellas enviado.";
-            FLAlertLayer::create("Geode", mensaje.c_str(), "OK")->show();
+            GameLevelManager::sharedState()->rateStars(m_level->m_levelID, static_cast<int>(selectedStars));
+
+            std::string message = std::to_string(selectedStars) + " stars submitted.";
+            FLAlertLayer::create("Geode", message.c_str(), "OK")->show();
         }
     }
 };
