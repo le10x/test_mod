@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class $modify(RateStarsLayer, LevelInfoLayer) {
+class $modify(GDRateStarsLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelInfoLayer::init(level, p1)) return false;
 
