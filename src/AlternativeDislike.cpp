@@ -7,9 +7,8 @@ class $modify(DislikeLayer, LevelInfoLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelInfoLayer::init(level, p1)) return false;
 
-        // Comprobar si el usuario activó este botón en la configuración
-        bool habilitado = Mod::get()->getSettingValue<bool>("mostrar-dislike");
-        if (!habilitado) return true;
+        bool enabled = Mod::get()->getSettingValue<bool>("show-dislike");
+        if (!enabled) return true;
 
         if (auto menu = this->getChildByID("left-side-menu")) {
             auto btnSprite = CCSprite::createWithSpriteFrameName("GJ_dislikeBtn_001.png");
@@ -18,10 +17,10 @@ class $modify(DislikeLayer, LevelInfoLayer) {
                 auto myButton = CCMenuItemSpriteExtra::create(
                     btnSprite,
                     this,
-                    menu_selector(DislikeLayer::onAlternativeDislike)
+                    menu_selector(DislikeLayer::onShortcutDislike)
                 );
 
-                myButton->setID("alt-dislike-button");
+                myButton->setID("shortcut-dislike-button");
                 menu->addChild(myButton);
                 menu->updateLayout();
             }
@@ -29,7 +28,7 @@ class $modify(DislikeLayer, LevelInfoLayer) {
         return true;
     }
 
-    void onAlternativeDislike(CCObject* sender) {
+    void onShortcutDislike(CCObject* sender) {
         if (m_level && GameLevelManager::sharedState()) {
             GameLevelManager::sharedState()->likeItem(
                 static_cast<LikeItemType>(1), 
@@ -37,7 +36,7 @@ class $modify(DislikeLayer, LevelInfoLayer) {
                 false, 
                 0
             );
-            FLAlertLayer::create("Geode", "¡Dislike enviado!", "OK")->show();
+            FLAlertLayer::create("Geode", "Dislike submitted!", "OK")->show();
         }
     }
 };
