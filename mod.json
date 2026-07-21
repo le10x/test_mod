@@ -12,13 +12,9 @@
     "developer": "le10x",
     "description": "descripcion",
     "settings": {
-        "rate-stars": {
-            "name": "Rate Stars",
-            "description": "Elige la cantidad fija de estrellas que enviara el acceso directo. (1-10)",
-            "type": "int",
-            "default": 10,
-            "min": 0,
-            "max": 11
+        "shortcuts-header": {
+            "type": "title",
+            "name": "Shortcuts"
         },
         "show-like": {
             "name": "Like Shortcut",
@@ -37,6 +33,14 @@
             "description": "Activa o desactiva el acceso directo de Rate Stars.",
             "type": "bool",
             "default": true
+        },
+        "rate-stars": {
+            "name": "Rate Stars",
+            "description": "Elige la cantidad fija de estrellas que enviara el acceso directo. (1-10)",
+            "type": "int",
+            "default": 10,
+            "min": 0,
+            "max": 11
         }
     }
 }
