@@ -8,12 +8,12 @@ else()
 endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(TestMod VERSION 1.0.0)
+project(InfinityMenu VERSION 1.0.0)
 
 add_library(${PROJECT_NAME} SHARED
-    src/AlternativeLike.cpp
-    src/AlternativeDislike.cpp
-    src/AlternativeRate.cpp
+    src/ShortcutLike.cpp
+    src/ShortcutDislike.cpp
+    src/ShortcutRateStars.cpp
     # Add any extra C++ source files here
 )
 
