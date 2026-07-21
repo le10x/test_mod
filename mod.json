@@ -12,6 +12,16 @@
     "developer": "le10x",
     "description": "descripcion",
     "settings": {
+        "bypasses-header": {
+            "type": "title",
+            "name": "Bypasses"
+        },
+        "bypass-text": {
+            "name": "Bypass Text Limit",
+            "description": "Elimina el límite de caracteres en los campos de texto.",
+            "type": "bool",
+            "default": false
+        },
         "shortcuts-header": {
             "type": "title",
             "name": "Shortcuts"
@@ -36,11 +46,11 @@
         },
         "rate-stars": {
             "name": "Rate Stars",
-            "description": "Elige la cantidad fija de estrellas que enviara el acceso directo. (1-10)",
+            "description": "Elige la cantidad fija de estrellas que enviara el acceso directo. (0-10)",
             "type": "int",
             "default": 10,
             "min": 0,
-            "max": 11
+            "max": 10
         }
     }
 }
