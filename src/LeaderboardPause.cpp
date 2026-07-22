@@ -15,7 +15,6 @@ class $modify(LDPauseLayer, PauseLayer) {
 
         if (auto children = this->getChildren()) {
             for (int i = 0; i < children->count(); ++i) {
-                // CORREGIDO: Se removio cocos2d:: para compatibilidad estricta con Android64
                 if (auto child = typeinfo_cast<CCMenu*>(children->objectAtIndex(i))) {
                     float xPos = child->getPositionX();
                     
