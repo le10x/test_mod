@@ -16,6 +16,12 @@
             "type": "title",
             "name": "Bypasses"
         },
+        "bypass-icons": {
+            "name": "Bypass Icon Lock",
+            "description": "Desbloquea todos los iconos, colores y cosméticos de forma visual.",
+            "type": "bool",
+            "default": true
+        },
         "bypass-text": {
             "name": "Bypass Text Limit",
             "description": "Elimina el límite de caracteres en los campos de texto.",
