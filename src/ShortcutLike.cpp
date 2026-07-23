@@ -36,7 +36,7 @@ class $modify(LikeLayer, LevelInfoLayer) {
                 true, 
                 0
             );
-            FLAlertLayer::create("Geode", "Like submitted!", "OK")->show();
+            FLAlertLayer::create("Like", "Like submitted!", "OK")->show();
         }
     }
 };
