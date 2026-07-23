@@ -36,7 +36,7 @@ class $modify(DislikeLayer, LevelInfoLayer) {
                 false, 
                 0
             );
-            FLAlertLayer::create("Geode", "Dislike submitted!", "OK")->show();
+            FLAlertLayer::create("Dislike", "Dislike submitted!", "OK")->show();
         }
     }
 };
