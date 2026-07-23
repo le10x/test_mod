@@ -41,7 +41,7 @@ class $modify(GDRateStarsLayer, LevelInfoLayer) {
             GameLevelManager::sharedState()->rateStars(m_level->m_levelID, static_cast<int>(selectedStars));
 
             std::string message = std::to_string(selectedStars) + " Stars submitted!";
-            FLAlertLayer::create("Geode", message.c_str(), "OK")->show();
+            FLAlertLayer::create("Rate Stars", message.c_str(), "OK")->show();
         }
     }
 };
